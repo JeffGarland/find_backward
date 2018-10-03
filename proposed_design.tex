@@ -1,0 +1,21 @@
+\section{Proposed Design}
+
+\subsection{Design}
+
+This paper proposes to introduce iterator-based and range-based overloads of
+the functions \code{find_backward()}, \code{find_not_backward()},
+\code{find_if_backward()}, \code{find_if_not_backward()}, and
+\code{find_not()}.  The following synopsis has interface details.  Note that
+the iterator-based *\code{_backward} overloads in namespace \code{ranges} do
+not take an iterator-sentinel pair; this is not suitable for an algorithm that
+operates in reverse.  \code{find_not()}, being the only forward-operating
+algorithm proposed, does have a sentinel-accepting overload.
+
+\subsubsection{\code{flat_set} Synopsis}
+
+\lstinputlisting[language=C++]{synopsis.hpp}
+
+
+\section{Acknowledgements}
+
+Thanks to Alisdair Meredith and Marshall Clow for encouraging this submission.

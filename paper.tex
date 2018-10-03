@@ -1,0 +1,53 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage{color}
+\usepackage{cite}
+\usepackage[pdftex, bookmarks=true]{hyperref}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{matrix}
+\usepackage{pgfplots}
+\usepgfplotslibrary{groupplots}
+\usepackage[margin=0.75in]{geometry}
+
+% Make a draft watermark.
+% \usepackage{draftwatermark}
+% \SetWatermarkFontSize{40pt}
+% \SetWatermarkScale{4.0}
+
+% TODO: Use bibtex or some better bibliography management
+% tool.
+
+\input{style.tex}
+\input{macros.tex}
+
+\begin{document}
+
+\title{\textbf{\Large \code{find_backward}}}
+\date{}
+{\let\newpage\relax\maketitle}
+
+\noindent\textbf{Document Number:} D????R0\\
+\textbf{Date:} 2018-10-02\\
+\textbf{Reply to:} Zach Laine whatwasthataddress@gmail.com\\
+\textbf{Audience:} LEWG
+
+\section{Introduction}
+
+\label{sec:intro}
+
+Sometimes you need to search backward.  This is often awkward to do with
+\code{find} and \code{make_reverse_iterator}.  We should have first-class
+algorithms to turn this:
+
+\lstinputlisting[language=C++, firstline=3, lastline=7]{snippets.cpp}
+
+into this:
+
+\lstinputlisting[language=C++, firstline=41, lastline=42]{snippets.cpp}
+
+\input{motivation_and_scope}
+\input{proposed_design}
+
+\end{document}
