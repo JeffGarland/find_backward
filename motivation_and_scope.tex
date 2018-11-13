@@ -48,24 +48,3 @@ clearer:
 The use of \code{next()} may at first appear like a mistake, until the reader
 takes a moment to think things through.  In the \code{reverse_iterator}
 version, this correctness is a lot harder to readily grasp.
-
-\subsubsection{\code{find_not()}}
-
-One more thing.  Consider this use of \code{find()}:
-
-\lstinputlisting[language=C++, firstline=57, lastline=58]{snippets.cpp}
-
-This gives us the first occurance of \code{1} in \code{vec}.  What if we want
-to find the first occurrance of any number besides \code{1} in \code{vec}?  We
-have to write an unfortunate amount of code:
-
-\lstinputlisting[language=C++, firstline=63, lastline=64]{snippets.cpp}
-
-With \code{find_not()} the code gets much more terse:
-
-\lstinputlisting[language=C++, firstline=69, lastline=70]{snippets.cpp}
-
-The existing \code{find} variants are: \code{find()}, \code{find_if()}, and
-\code{find_if_not()}.  It seems natural to also have \code{find_not()}, for
-the very reason that we have \code{find_if_not()} -- to avoid having to write
-a lambda to wrap the negation of the find condition.
