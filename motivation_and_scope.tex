@@ -11,21 +11,18 @@ the use of \code{find()}:
 
 \lstinputlisting[language=C++, firstline=12, lastline=15]{snippets.cpp}
 
-That seems nicer in that there is no raw loop, but it has major drawbacks.
-First, it requires an unpleasant amount of typing.  Second, it is less
-efficient than forward-iterator \code{find()} , since \code{reverse_iterator}
-calls its base-iterator's \code{operator--()} in most of its member functions
-before doing the work that the member function requires.
+That seems nicer in that there is no raw loop, but it requires an unpleasant
+amount of typing (and an associated lack of clarity).
 
 Consider this instead:
 
 \lstinputlisting[language=C++, firstline=41, lastline=42]{snippets.cpp}
 
-That's better!  It's a lot less verbose and is more efficient too.
+That's better!  It's a lot less verbose.
 
-Another drawback is the lack of clarity of the \code{make_reverse_iterator()}
-code.  In a typical use of \code{find()}, I search forward from the element I
-start from, including the element itself:
+Let's consider for a moment the lack of clarity of the
+\code{make_reverse_iterator()} code.  In a typical use of \code{find()}, I
+search forward from the element I start from, including the element itself:
 
 \lstinputlisting[language=C++, firstline=20, lastline=20]{snippets.cpp}
 
