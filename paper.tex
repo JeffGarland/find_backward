@@ -30,8 +30,8 @@
 \usepackage[T1]{fontenc}
 \usepackage[pdftex, final]{graphicx}
 \usepackage[pdftex,
-            pdftitle={find_ast},
-            pdfsubject={find_last},
+            pdftitle={find\_last},
+            pdfsubject={find\_last},
             pdfcreator={Zach Laine},
             bookmarks=true,
             bookmarksnumbered=true,
@@ -82,6 +82,93 @@
 \setglobalstyles
 
 \include{revisions}
+
+\section{Motivation and Scope}
+
+Consider how finding the last element that is equal to `x` in a range is
+typically done (for all the examples below, we assume a valid range of
+elements \tcode{[first, last)}, and an iterator \tcode{it} within that range):
+
+\begin{itemdecl}
+    while (it-- != first) {
+        if (*it == x) {
+            // Use it here...
+        }
+    }
+\end{itemdecl}
+
+Raw loops are icky though.  Perhaps we should do a bit of extra work to allow
+the use of \tcode{find()}:
+
+\begin{itemdecl}
+    auto rfirst = std::make_reverse_iterator(it);
+    auto rlast = std::make_reverse_iterator(first);
+    auto it = std::find(rfirst, rlast, x);
+    // Use it here...
+\end{itemdecl}
+
+That seems nicer in that there is no raw loop, but it requires an unpleasant
+amount of typing (and an associated lack of clarity).
+
+Consider this instead:
+
+\begin{itemdecl}
+    auto it = std::find_last(first, it, x);
+    // Use it here...
+\end{itemdecl}
+
+That's better!  It's a lot less verbose.
+
+Let's consider for a moment the lack of clarity of the
+\tcode{make_reverse_iterator()} code.  In a typical use of \tcode{find()}, I
+search forward from the element I start from, including the element itself:
+
+\begin{itemdecl}
+    auto it = std::find(it, last, x); // Includes examination of *it.
+\end{itemdecl}
+
+However, using finding in reverse in the middle of a range leaves out the
+element pointed to by the current iterator:
+
+\begin{itemdecl}
+    auto it = std::find( // Skips *it entirely.
+        std::make_reverse_iterator(first),
+        std::make_reverse_iterator(it),
+        x);
+\end{itemdecl}
+
+That leads to code like this:
+
+\begin{itemdecl}
+    auto it = std::find( // Includes *it again!
+        std::make_reverse_iterator(first),
+        std::make_reverse_iterator(std::next(it)),
+        x);
+\end{itemdecl}
+
+Though this looks like an off-by-one error, is is correct.  Moreover, even
+though the use of \tcode{next()} is correct, it gets lost in noise of the rest
+of the code, since it is so verbose.  Use \tcode{find_last()} makes things
+clearer:
+
+\begin{itemdecl}
+    // Search, but don't include *it.
+    auto it_1 = std::find_last(first, it, x);
+
+    // Search, and include *it.
+    auto it_2 = std::find_last(first, std::next(it), x);
+\end{itemdecl}
+
+The use of \tcode{next()} may at first appear like a mistake, until the reader
+takes a moment to think things through.  In the \tcode{reverse_iterator}
+version, this correctness is a lot harder to readily grasp.
+
+\section{Feature-Test Macro}
+
+In addition to the wording that follows, add a new feature-test macro
+\tcode{__cpp_lib_find_last}, with value \tcode{202012}.  This macro should be
+defined in \tcode{<algorithm>}.
+
 \newcommand{\indexhdr}[1]{}
 \newcommand{\indexlibrarymember}[2]{
 }
