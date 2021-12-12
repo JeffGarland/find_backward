@@ -163,10 +163,59 @@ The use of \tcode{next()} may at first appear like a mistake, until the reader
 takes a moment to think things through.  In the \tcode{reverse_iterator}
 version, this correctness is a lot harder to readily grasp.
 
+\section{Design Considerations}
+
+During LWG review it was noted that the original design does not account
+for the principle of preserving useful information.  Specifically, with
+sentinal-based ranges \tcode{find_last()} needs to calculate the end of the
+range, but the api as specified does not return the end. At the time
+\footnote{Dec 2020 LWG review notes https://wiki.edg.com/bin/view/Wg21fall2020/P1223-2020-12-11},
+a small group had consensus to ask LEWG to change the return to include the end.
+
+To incorporate the calculation of the end of the range would require changing the
+signature from:
+
+\begin{itemdecl}
+    //current wording
+    template<forward_iterator I, sentinel<I> S, class T, class Proj = identity>
+      requires indirect_binary_predicate<ranges::equal_to, projected<I, Proj>, const T*>
+      constexpr I find_last(I first, S last, const T& value, Proj proj = {});
+
+    template<forward_range R, class T, class Proj = identity>
+      requires indirect_binary_predicate<ranges::equal_to, projected<iterator_t<R>, Proj>, const T*>
+      constexpr borrowed_iterator_t<R>
+        find_last(R&& r, const T& value, Proj proj = {});
+\end{itemdecl}
+
+to:
+
+\begin{itemdecl}
+    // possible new wording
+    template<forward_iterator I, sentinel<I> S, class T, class Proj = identity>
+      requires indirect_binary_predicate<ranges::equal_to, projected<I, Proj>, const T*>
+      constexpr subrange<I> find_last(I first, S last, const T& value, Proj proj = {});
+
+    template<forward_range R, class T, class Proj = identity>
+      requires indirect_binary_predicate<ranges::equal_to, projected<iterator_t<R>, Proj>, const T*>
+      constexpr borrowed_subrange_t<R>
+        find_last(R&& r, const T& value, Proj proj = {});
+\end{itemdecl}
+
+where the subrange would be \tcode{[i, last)} when found and \tcode{[last, last)}
+when not found.
+
+But there's a downside to this design.  The api is not inconsistent with the other
+find algorithms \tcode{find and find_first}. Also, the usage in a typical use case
+where only the found iterator is used the user has to discard the extra return
+information. This was discussed at some length on the LEWG mailing list with only
+tepid support for the proposed change \footnote{LEWG list discussion 2021-12 http://lists.isocpp.org/lib-ext/2021/12/21613.php}.
+
+Given this context the author recommends sticking with the original api.
+
 \section{Feature-Test Macro}
 
 In addition to the wording that follows, add a new feature-test macro
-\tcode{__cpp_lib_find_last}, with value \tcode{202012}.  This macro should be
+\tcode{__cpp_lib_find_last}, with value \tcode{20xxxx}.  This macro should also be
 defined in \tcode{<algorithm>}.
 
 \newcommand{\indexhdr}[1]{}
